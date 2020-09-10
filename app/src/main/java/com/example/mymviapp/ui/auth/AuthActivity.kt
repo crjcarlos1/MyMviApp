@@ -3,16 +3,17 @@ package com.example.mymviapp.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
-import com.example.mymviapp.ui.BaseActivity
-import com.example.mymviapp.ui.ResponseType
 import com.example.mymviapp.R
+import com.example.mymviapp.ui.BaseActivity
 import com.example.mymviapp.ui.main.MainActivity
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
+import kotlinx.android.synthetic.main.activity_auth.*
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
 
@@ -40,34 +41,23 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         viewModel.cancelActiveJobs()
     }
 
-    private fun subscriberObservers() {
+    override fun displayProgressBar(bool: Boolean) {
+        if (bool) {
+            progress_bar.visibility = View.VISIBLE
+        } else {
+            progress_bar.visibility = View.GONE
+        }
+    }
 
+    private fun subscriberObservers() {
         viewModel.dataState.observe(this, Observer { dataState ->
+            onDataStateChange(dataState)
             dataState.data?.let { data ->
                 data.data?.let { event ->
                     event.getContentIfNotHandled()?.let {
                         it.authToken?.let {
                             Log.d(TAG, "AuthActivity, dataState: $it")
                             viewModel.setAuthToken(it)
-                        }
-                    }
-                }
-                data.response?.let { event ->
-                    event.getContentIfNotHandled()?.let {
-                        when (it.responseType) {
-                            is ResponseType.Dialog -> {
-                                //showDialog
-                            }
-                            is ResponseType.Toast -> {
-                                //showToast
-                            }
-                            is ResponseType.None -> {
-                                //print log
-                                Log.e(
-                                    TAG,
-                                    "AuthActivity: Response ${it.message}, ${it.responseType}"
-                                )
-                            }
                         }
                     }
                 }

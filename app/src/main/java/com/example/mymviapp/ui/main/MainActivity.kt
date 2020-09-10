@@ -3,10 +3,11 @@ package com.example.mymviapp.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.Observer
+import com.example.mymviapp.R
 import com.example.mymviapp.ui.BaseActivity
 import com.example.mymviapp.ui.auth.AuthActivity
-import com.example.mymviapp.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -22,6 +23,14 @@ class MainActivity : BaseActivity() {
             sessionManager.logout()
         }
 
+    }
+
+    override fun displayProgressBar(bool: Boolean) {
+        if (bool) {
+            progress_bar.visibility = View.VISIBLE
+        } else {
+            progress_bar.visibility = View.GONE
+        }
     }
 
     fun subscribeObservers() {
