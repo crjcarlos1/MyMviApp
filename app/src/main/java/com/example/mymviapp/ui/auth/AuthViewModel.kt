@@ -2,14 +2,13 @@ package com.example.mymviapp.ui.auth
 
 import androidx.lifecycle.LiveData
 import com.example.mymviapp.models.AuthToken
+import com.example.mymviapp.repository.auth.AuthRepository
 import com.example.mymviapp.ui.BaseViewModel
 import com.example.mymviapp.ui.DataState
 import com.example.mymviapp.ui.auth.state.AuthStateEvent
 import com.example.mymviapp.ui.auth.state.AuthViewState
 import com.example.mymviapp.ui.auth.state.LoginFields
 import com.example.mymviapp.ui.auth.state.RegistrationFields
-import com.example.mymviapp.util.AbsentLiveData
-import com.example.mymviapp.repository.auth.AuthRepository
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
 
@@ -21,18 +20,18 @@ constructor(val authRepository: AuthRepository) : BaseViewModel<AuthStateEvent, 
     override fun handleStateEvent(stateEvent: AuthStateEvent): LiveData<DataState<AuthViewState>> {
         when (stateEvent) {
             is AuthStateEvent.LoginAttempEvent -> {
-                return authRepository.attempLogin(
+                return authRepository.attemptLogin(
                     stateEvent.email, stateEvent.password
                 )
             }
             is AuthStateEvent.RegisterAttempEvent -> {
-                return authRepository.attempRegistration(
+                return authRepository.attemptRegistration(
                     stateEvent.email, stateEvent.username,
                     stateEvent.password, stateEvent.confirmPassword
                 )
             }
             is AuthStateEvent.CheckPreviousAuthEvent -> {
-                return AbsentLiveData.create()
+                return authRepository.checkPreviousAuthUser()
             }
         }
     }

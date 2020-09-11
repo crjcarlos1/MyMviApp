@@ -1,8 +1,9 @@
 package com.example.mymviapp.di.auth
 
+import android.content.SharedPreferences
+import com.example.mymviapp.api.auth.OpenApiAuthService
 import com.example.mymviapp.persistence.AccountPropertiesDao
 import com.example.mymviapp.persistence.AuthTokenDao
-import com.example.mymviapp.api.auth.OpenApiAuthService
 import com.example.mymviapp.repository.auth.AuthRepository
 import com.example.mymviapp.session.SessionManager
 import dagger.Module
@@ -12,11 +13,11 @@ import retrofit2.Retrofit
 
 @InternalCoroutinesApi
 @Module
-class AuthModule{
+class AuthModule {
 
     @AuthScope
     @Provides
-    fun provideFakeApiService(retrofitBuilder : Retrofit.Builder): OpenApiAuthService {
+    fun provideFakeApiService(retrofitBuilder: Retrofit.Builder): OpenApiAuthService {
         return retrofitBuilder.build()
             .create(OpenApiAuthService::class.java)
     }
@@ -27,13 +28,17 @@ class AuthModule{
         sessionManager: SessionManager,
         authTokenDao: AuthTokenDao,
         accountPropertiesDao: AccountPropertiesDao,
-        openApiAuthService: OpenApiAuthService
+        openApiAuthService: OpenApiAuthService,
+        sharedPreferences: SharedPreferences,
+        sharePrefsEditor: SharedPreferences.Editor
     ): AuthRepository {
         return AuthRepository(
             authTokenDao,
             accountPropertiesDao,
             openApiAuthService,
-            sessionManager
+            sessionManager,
+            sharedPreferences,
+            sharePrefsEditor
         )
     }
 

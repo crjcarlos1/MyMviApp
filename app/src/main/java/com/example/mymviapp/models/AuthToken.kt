@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
-import com.example.mymviapp.models.AccountProperties
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -26,9 +25,9 @@ data class AuthToken(
     @ColumnInfo(name = "account_pk")
     var account_pk: Int? = -1,
 
+
+    @ColumnInfo(name = "token")
     @SerializedName("token")
     @Expose
-    @ColumnInfo(name = "token")
     var token: String? = null
-
 )

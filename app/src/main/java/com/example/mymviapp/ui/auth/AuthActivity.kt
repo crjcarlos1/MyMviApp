@@ -11,6 +11,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.example.mymviapp.R
 import com.example.mymviapp.ui.BaseActivity
+import com.example.mymviapp.ui.auth.state.AuthStateEvent
 import com.example.mymviapp.ui.main.MainActivity
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
 import kotlinx.android.synthetic.main.activity_auth.*
@@ -31,6 +32,7 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         viewModel = ViewModelProvider(this, providerFactory).get(AuthViewModel::class.java)
         findNavController(R.id.auth_nav_host_fragment).addOnDestinationChangedListener(this)
         subscriberObservers()
+        checkAuthPreviousAuthUser()
     }
 
     override fun onDestinationChanged(
@@ -80,6 +82,10 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             }
         })
 
+    }
+
+    private fun checkAuthPreviousAuthUser() {
+        viewModel.setStateEvent(AuthStateEvent.CheckPreviousAuthEvent())
     }
 
     private fun navMainActivity() {

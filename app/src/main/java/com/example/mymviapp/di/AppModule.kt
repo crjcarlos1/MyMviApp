@@ -1,17 +1,20 @@
 package com.example.mymviapp.di
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
+import com.example.mymviapp.R
 import com.example.mymviapp.persistence.AccountPropertiesDao
 import com.example.mymviapp.persistence.AppDatabase
 import com.example.mymviapp.persistence.AppDatabase.Companion.DATABASE_NAME
 import com.example.mymviapp.persistence.AuthTokenDao
 import com.example.mymviapp.util.Constants
 import com.example.mymviapp.util.LiveDataCallAdapterFactory
-import com.example.mymviapp.R
+import com.example.mymviapp.util.PreferenceKeys
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -21,7 +24,19 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
-class AppModule {
+class AppModule{
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(application: Application): SharedPreferences {
+        return application.getSharedPreferences(PreferenceKeys.APP_PREFERENCES, Context.MODE_PRIVATE)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPrefsEditor(sharedPreferences: SharedPreferences): SharedPreferences.Editor {
+        return sharedPreferences.edit()
+    }
 
     @Singleton
     @Provides
@@ -31,10 +46,11 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideRetrofitBuilder(gson: Gson): Retrofit.Builder {
-        return Retrofit.Builder().baseUrl(Constants.BASE_URL)
+    fun provideRetrofitBuilder(gsonBuilder:  Gson): Retrofit.Builder{
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
             .addCallAdapterFactory(LiveDataCallAdapterFactory())
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create(gsonBuilder))
     }
 
     @Singleton
@@ -68,10 +84,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideGlideInstance(
-        application: Application,
-        requestOptions: RequestOptions
-    ): RequestManager {
+    fun provideGlideInstance(application: Application, requestOptions: RequestOptions): RequestManager {
         return Glide.with(application)
             .setDefaultRequestOptions(requestOptions)
     }
