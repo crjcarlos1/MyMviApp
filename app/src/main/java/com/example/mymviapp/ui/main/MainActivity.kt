@@ -17,6 +17,7 @@ import com.example.mymviapp.ui.main.blog.UpdateBlogFragment
 import com.example.mymviapp.ui.main.blog.ViewBlogFragment
 import com.example.mymviapp.util.BottomNavController
 import com.example.mymviapp.util.setUpNavigation
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -57,6 +58,10 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
             android.R.id.home -> onBackPressed()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun expandAppBar() {
+        findViewById<AppBarLayout>(R.id.app_bar).setExpanded(true)
     }
 
     override fun onBackPressed() = bottomNavController.onBackPressed()
@@ -104,7 +109,7 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
     }
 
     override fun onGraphChange() {
-        //        TODO("What needs to happen when the graph changes?")
+        expandAppBar()
     }
 
     override fun onReselectNavItem(navController: NavController, fragment: Fragment) =

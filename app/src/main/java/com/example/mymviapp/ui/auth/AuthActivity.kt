@@ -14,6 +14,7 @@ import com.example.mymviapp.ui.BaseActivity
 import com.example.mymviapp.ui.auth.state.AuthStateEvent
 import com.example.mymviapp.ui.main.MainActivity
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.activity_auth.*
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
@@ -50,6 +51,11 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             progress_bar.visibility = View.GONE
         }
     }
+
+    override fun expandAppBar() {
+        //findViewById<AppBarLayout>(R.id.app_bar).setExpanded(true)  ignore
+    }
+
 
     private fun subscriberObservers() {
         viewModel.dataState.observe(this, Observer { dataState ->
