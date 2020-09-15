@@ -18,10 +18,11 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 
 @InternalCoroutinesApi
-abstract class NetworkBoundResource<ResponseObject, ViewStateType>
+abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>
     (
-    isNetworkAvailable: Boolean, // is their a network connection?
-    isNetworkRequest: Boolean // is this a network request?
+    isNetworkAvailable: Boolean,    // is their a network connection?
+    isNetworkRequest: Boolean,      // is this a network request?
+    shouldLoadFromCache: Boolean    // should the cached data be loaded?
 ) {
 
     private val TAG: String = "AppDebug"
@@ -33,6 +34,21 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType>
     init {
         setJob(initNewJob())
         setValue(DataState.loading(isLoading = true, cachedData = null))
+
+        if (shouldLoadFromCache) {
+            val dbSource = loadFromCache()
+            result.addSource(dbSource) {
+                result.removeSource(dbSource)
+                setValue(DataState.loading(true, it))
+            }
+        }
+        /**
+         *      NOS QUEDAMOS EN ESTA PARTE
+         */
+
+
+
+
 
         if (isNetworkRequest) {
             if (isNetworkAvailable) {
@@ -157,6 +173,10 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType>
     abstract suspend fun handleApiSuccessResponse(response: GenericApiResponse.ApiSuccessResponse<ResponseObject>)
 
     abstract fun createCall(): LiveData<GenericApiResponse<ResponseObject>>
+
+    abstract fun loadFromCache(): LiveData<ViewStateType>
+
+    abstract suspend fun updateLocalDb(cacheObjecj: CacheObject?)
 
     abstract fun setJob(job: Job)
 
