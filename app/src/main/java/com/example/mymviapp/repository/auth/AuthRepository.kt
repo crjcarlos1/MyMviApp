@@ -53,9 +53,9 @@ constructor(
             return returnErrorResponse(loginFieldErrors, ResponseType.Dialog())
         }
 
-        return object : NetworkBoundResource<LoginResponse, AuthViewState>(
+        return object : NetworkBoundResource<LoginResponse, Any, AuthViewState>(
             sessionManager.isConnectedToTheInternet(),
-            true
+            true, false
         ) {
 
             // not used in this case
@@ -123,6 +123,16 @@ constructor(
                 repositoryJob = job
             }
 
+            //ignore
+            override fun loadFromCache(): LiveData<AuthViewState> {
+                return AbsentLiveData.create()
+            }
+
+            //ignore
+            override suspend fun updateLocalDb(cacheObjecj: Any?) {
+                TODO("Not yet implemented")
+            }
+
         }.asLiveData()
     }
 
@@ -139,13 +149,23 @@ constructor(
             return returnErrorResponse(registrationFieldErrors, ResponseType.Dialog())
         }
 
-        return object : NetworkBoundResource<RegistrationResponse, AuthViewState>(
+        return object : NetworkBoundResource<RegistrationResponse, Any, AuthViewState>(
             sessionManager.isConnectedToTheInternet(),
-            true
+            true, false
         ) {
             // not used in this case
             override suspend fun createCacheRequestAndReturn() {
 
+            }
+
+            //ignore
+            override fun loadFromCache(): LiveData<AuthViewState> {
+                return AbsentLiveData.create()
+            }
+
+            //ignore
+            override suspend fun updateLocalDb(cacheObjecj: Any?) {
+                TODO("Not yet implemented")
             }
 
             override suspend fun handleApiSuccessResponse(response: GenericApiResponse.ApiSuccessResponse<RegistrationResponse>) {
@@ -223,9 +243,9 @@ constructor(
             Log.d(TAG, "checkPreviousAuthUser: No previously authenticated user found.")
             return returnNoTokenFound()
         } else {
-            return object : NetworkBoundResource<Void, AuthViewState>(
+            return object : NetworkBoundResource<Void, Any,AuthViewState>(
                 sessionManager.isConnectedToTheInternet(),
-                false
+                false,false
             ) {
 
                 override suspend fun createCacheRequestAndReturn() {
@@ -272,6 +292,16 @@ constructor(
                 // not used in this case
                 override fun createCall(): LiveData<GenericApiResponse<Void>> {
                     return AbsentLiveData.create()
+                }
+
+                //ignore
+                override fun loadFromCache(): LiveData<AuthViewState> {
+                    return AbsentLiveData.create()
+                }
+
+                //ignore
+                override suspend fun updateLocalDb(cacheObjecj: Any?) {
+                    TODO("Not yet implemented")
                 }
 
                 override fun setJob(job: Job) {

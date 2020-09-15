@@ -42,9 +42,7 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>
                 setValue(DataState.loading(true, it))
             }
         }
-        /**
-         *      NOS QUEDAMOS EN ESTA PARTE
-         */
+
 
 
 

@@ -1,11 +1,17 @@
 package com.example.mymviapp.ui.main.account
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.mymviapp.R
+import com.example.mymviapp.models.AccountProperties
+import com.example.mymviapp.ui.main.account.state.AccountStateEvent
 import kotlinx.android.synthetic.main.fragment_account.*
+import kotlinx.coroutines.InternalCoroutinesApi
 
+@InternalCoroutinesApi
 class AccountFragment : BaseAccountFragment() {
 
     override fun onCreateView(
@@ -28,6 +34,13 @@ class AccountFragment : BaseAccountFragment() {
             viewModel.logout()
         }
 
+        subscribeObservers()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.setStateEvent(AccountStateEvent.GetAccountPropertiesEvent())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -43,6 +56,39 @@ class AccountFragment : BaseAccountFragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun setAccountDataFileds(accountProperties: AccountProperties) {
+        email?.setText(accountProperties.email)
+        username?.setText(accountProperties.username)
+    }
+
+    private fun subscribeObservers() {
+        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+            stateChangeListener.onDataStateChange(dataState)
+            dataState?.let {
+                it.data?.let { data ->
+                    data.data?.let { event ->
+                        event.getContentIfNotHandled()?.let { viewState ->
+                            viewState.accountProperties?.let { accountProperties ->
+                                Log.d(TAG, "accountFragment, dataState $accountProperties")
+                                viewModel.setAccountPropertiesData(accountProperties)
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+
+        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
+            viewState?.let {
+                it.accountProperties?.let {
+                    Log.d(TAG, "AccountFragment: ViewState: $it")
+                    setAccountDataFileds(it)
+                }
+            }
+        })
     }
 
 }

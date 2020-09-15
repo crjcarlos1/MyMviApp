@@ -9,7 +9,9 @@ import com.example.mymviapp.ui.main.blog.ViewBlogFragment
 import com.example.mymviapp.ui.main.create_blog.CreateBlogFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import kotlinx.coroutines.InternalCoroutinesApi
 
+@InternalCoroutinesApi
 @Module
 abstract class MainFragmentBuildersModule {
     @ContributesAndroidInjector()

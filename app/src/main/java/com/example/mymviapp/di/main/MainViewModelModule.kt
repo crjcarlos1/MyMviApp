@@ -6,7 +6,9 @@ import com.example.mymviapp.ui.main.account.AccountViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.InternalCoroutinesApi
 
+@InternalCoroutinesApi
 @Module
 abstract class MainViewModelModule {
 

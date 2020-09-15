@@ -9,8 +9,10 @@ import com.example.mymviapp.ui.DataState
 import com.example.mymviapp.ui.main.account.state.AccountStateEvent
 import com.example.mymviapp.ui.main.account.state.AccountViewState
 import com.example.mymviapp.util.AbsentLiveData
+import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
 
+@InternalCoroutinesApi
 class AccountViewModel
 @Inject
 constructor(
@@ -21,7 +23,9 @@ constructor(
     override fun handleStateEvent(stateEvent: AccountStateEvent): LiveData<DataState<AccountViewState>> {
         when (stateEvent) {
             is AccountStateEvent.GetAccountPropertiesEvent -> {
-                return AbsentLiveData.create()
+                return sessionManager.cachedToken.value?.let {authToken ->
+                    accountRepository.getAccountProperties(authToken)
+                }?: AbsentLiveData.create()
             }
             is AccountStateEvent.ChangePasswordEvent -> {
                 return AbsentLiveData.create()
