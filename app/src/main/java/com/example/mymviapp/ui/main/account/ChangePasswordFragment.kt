@@ -1,10 +1,16 @@
 package com.example.mymviapp.ui.main.account
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.mymviapp.R
+import com.example.mymviapp.ui.main.account.state.AccountStateEvent
+import com.example.mymviapp.util.SuccessHandling.Companion.RESPONSE_PASSWORD_UPDATE_SUCCESS
+import kotlinx.android.synthetic.main.fragment_change_password.*
 import kotlinx.coroutines.InternalCoroutinesApi
 
 @InternalCoroutinesApi
@@ -21,5 +27,37 @@ class ChangePasswordFragment : BaseAccountFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        update_password_button.setOnClickListener {
+            viewModel.setStateEvent(
+                AccountStateEvent.ChangePasswordEvent(
+                    input_current_password.text.toString(),
+                    input_new_password.text.toString(),
+                    input_confirm_new_password.text.toString()
+                )
+            )
+        }
+
+        subscribeObservers()
     }
+
+    private fun subscribeObservers() {
+        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+            Log.d(TAG, "ChangePasswordFragment: DataState: $dataState")
+            stateChangeListener.onDataStateChange(dataState)
+            if (dataState != null) {
+                dataState.data?.let { data ->
+                    data.response?.let { event ->
+                        if (event.peekContent().message.equals(RESPONSE_PASSWORD_UPDATE_SUCCESS)) {
+                            findNavController().popBackStack()
+                        }
+                    }
+                }
+            }
+        })
+        viewModel.viewState.observe(viewLifecycleOwner, Observer {
+
+        })
+    }
+
 }

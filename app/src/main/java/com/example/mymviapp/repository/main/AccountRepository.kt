@@ -143,6 +143,62 @@ constructor(
         }.asLiveData()
     }
 
+    fun updatePassword(
+        authToken: AuthToken,
+        currentPasword: String,
+        newPassword: String,
+        confirmPassword: String
+    ): LiveData<DataState<AccountViewState>> {
+        return object : NetworkBoundResource<GenericResponse, Any, AccountViewState>(
+            sessionManager.isConnectedToTheInternet(),
+            true,
+            true,
+            false
+        ) {
+            //not applicable
+            override suspend fun createCacheRequestAndReturn() {
+
+            }
+
+            override suspend fun handleApiSuccessResponse(response: GenericApiResponse.ApiSuccessResponse<GenericResponse>) {
+                withContext(Main) {
+                    //finish with success response
+                    onCompleteJob(
+                        DataState.data(
+                            data = null,
+                            response = Response(response.body.response, ResponseType.Toast())
+                        )
+                    )
+                }
+            }
+
+            override fun createCall(): LiveData<GenericApiResponse<GenericResponse>> {
+                return openApiMainService.updatePassword(
+                    "Token ${authToken.token!!}",
+                    currentPasword,
+                    newPassword,
+                    confirmPassword
+                )
+            }
+
+            //not applicable
+            override fun loadFromCache(): LiveData<AccountViewState> {
+                return AbsentLiveData.create()
+            }
+
+            //not applicable
+            override suspend fun updateLocalDb(cacheObjecj: Any?) {
+
+            }
+
+            override fun setJob(job: Job) {
+                repositoryJob?.cancel()
+                repositoryJob = job
+            }
+
+        }.asLiveData()
+    }
+
     fun cancelActiveJobs() {
         Log.d(TAG, "AuthRepository: cancelling on-joing jobs...")
     }
