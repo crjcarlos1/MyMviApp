@@ -55,7 +55,7 @@ constructor(
 
         return object : NetworkBoundResource<LoginResponse, Any, AuthViewState>(
             sessionManager.isConnectedToTheInternet(),
-            true, false
+            true, true, false
         ) {
 
             // not used in this case
@@ -151,7 +151,7 @@ constructor(
 
         return object : NetworkBoundResource<RegistrationResponse, Any, AuthViewState>(
             sessionManager.isConnectedToTheInternet(),
-            true, false
+            true, true, false
         ) {
             // not used in this case
             override suspend fun createCacheRequestAndReturn() {
@@ -243,9 +243,9 @@ constructor(
             Log.d(TAG, "checkPreviousAuthUser: No previously authenticated user found.")
             return returnNoTokenFound()
         } else {
-            return object : NetworkBoundResource<Void, Any,AuthViewState>(
+            return object : NetworkBoundResource<Void, Any, AuthViewState>(
                 sessionManager.isConnectedToTheInternet(),
-                false,false
+                false, false, false
             ) {
 
                 override suspend fun createCacheRequestAndReturn() {

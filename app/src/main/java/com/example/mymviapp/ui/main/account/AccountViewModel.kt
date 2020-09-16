@@ -23,15 +23,23 @@ constructor(
     override fun handleStateEvent(stateEvent: AccountStateEvent): LiveData<DataState<AccountViewState>> {
         when (stateEvent) {
             is AccountStateEvent.GetAccountPropertiesEvent -> {
-                return sessionManager.cachedToken.value?.let {authToken ->
+                return sessionManager.cachedToken.value?.let { authToken ->
                     accountRepository.getAccountProperties(authToken)
-                }?: AbsentLiveData.create()
+                } ?: AbsentLiveData.create()
             }
             is AccountStateEvent.ChangePasswordEvent -> {
                 return AbsentLiveData.create()
             }
             is AccountStateEvent.UpdateAccountPropertiesEvent -> {
-                return AbsentLiveData.create()
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    authToken.account_pk?.let { pk ->
+                        accountRepository.saveAccountProperties(
+                            authToken, AccountProperties(
+                                pk, stateEvent.email, stateEvent.username
+                            )
+                        )
+                    }
+                } ?: AbsentLiveData.create()
             }
             is AccountStateEvent.None -> {
                 return AbsentLiveData.create()
