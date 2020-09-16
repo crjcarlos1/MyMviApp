@@ -1,6 +1,5 @@
 package com.example.mymviapp.repository.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.switchMap
 import com.example.mymviapp.api.GenericResponse
@@ -8,6 +7,7 @@ import com.example.mymviapp.api.main.OpenApiMainService
 import com.example.mymviapp.models.AccountProperties
 import com.example.mymviapp.models.AuthToken
 import com.example.mymviapp.persistence.AccountPropertiesDao
+import com.example.mymviapp.repository.JobManager
 import com.example.mymviapp.repository.NetworkBoundResource
 import com.example.mymviapp.session.SessionManager
 import com.example.mymviapp.ui.DataState
@@ -29,9 +29,8 @@ constructor(
     val openApiMainService: OpenApiMainService,
     val accountPropertiesDao: AccountPropertiesDao,
     val sessionManager: SessionManager
-) {
+) : JobManager("AccountRepository") {
     private val TAG = "AppDebug"
-    private var repositoryJob: Job? = null
 
     fun getAccountProperties(authToken: AuthToken): LiveData<DataState<AccountViewState>> {
         return object :
@@ -60,8 +59,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("getAccountProperties", job)
             }
 
             override fun loadFromCache(): LiveData<AccountViewState> {
@@ -137,8 +135,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("saveAccountProperties", job)
             }
         }.asLiveData()
     }
@@ -192,15 +189,10 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("updatePassword", job)
             }
 
         }.asLiveData()
-    }
-
-    fun cancelActiveJobs() {
-        Log.d(TAG, "AuthRepository: cancelling on-joing jobs...")
     }
 
 

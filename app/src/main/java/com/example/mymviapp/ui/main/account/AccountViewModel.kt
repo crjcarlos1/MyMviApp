@@ -6,6 +6,7 @@ import com.example.mymviapp.repository.main.AccountRepository
 import com.example.mymviapp.session.SessionManager
 import com.example.mymviapp.ui.BaseViewModel
 import com.example.mymviapp.ui.DataState
+import com.example.mymviapp.ui.auth.state.AuthStateEvent
 import com.example.mymviapp.ui.main.account.state.AccountStateEvent
 import com.example.mymviapp.ui.main.account.state.AccountViewState
 import com.example.mymviapp.util.AbsentLiveData
@@ -69,6 +70,20 @@ constructor(
 
     fun logout() {
         sessionManager.logout()
+    }
+
+    fun cancelActiveJobs() {
+        handlePendingData()
+        accountRepository.cancelActiveJobs()
+    }
+
+    fun handlePendingData() {
+        setStateEvent(AccountStateEvent.None())
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        accountRepository.cancelActiveJobs()
     }
 
 }

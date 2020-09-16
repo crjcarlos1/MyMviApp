@@ -14,7 +14,6 @@ import com.example.mymviapp.ui.DataStateChangeListener
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.InternalCoroutinesApi
-import java.lang.Exception
 import javax.inject.Inject
 
 @InternalCoroutinesApi
@@ -34,7 +33,8 @@ abstract class BaseAccountFragment : DaggerFragment() {
         setupActionBarWithNavController(R.id.accountFragment, activity as AppCompatActivity)
         viewModel = activity?.run {
             ViewModelProvider(this, providerFactory).get(AccountViewModel::class.java)
-        }?: throw Exception("invalid activity")
+        } ?: throw Exception("invalid activity")
+        cancelActiveJobs()
     }
 
     override fun onAttach(context: Context) {
@@ -56,6 +56,10 @@ abstract class BaseAccountFragment : DaggerFragment() {
             findNavController(),
             appBarConfiguration
         )
+    }
+
+    fun cancelActiveJobs() {
+        viewModel.cancelActiveJobs()
     }
 
 }

@@ -11,10 +11,13 @@ import androidx.navigation.NavController
 import com.example.mymviapp.R
 import com.example.mymviapp.ui.BaseActivity
 import com.example.mymviapp.ui.auth.AuthActivity
+import com.example.mymviapp.ui.main.account.BaseAccountFragment
 import com.example.mymviapp.ui.main.account.ChangePasswordFragment
 import com.example.mymviapp.ui.main.account.UpdateAccountFragment
+import com.example.mymviapp.ui.main.blog.BaseBlogFragment
 import com.example.mymviapp.ui.main.blog.UpdateBlogFragment
 import com.example.mymviapp.ui.main.blog.ViewBlogFragment
+import com.example.mymviapp.ui.main.create_blog.BaseCreateBlogFragment
 import com.example.mymviapp.util.BottomNavController
 import com.example.mymviapp.util.setUpNavigation
 import com.google.android.material.appbar.AppBarLayout
@@ -110,6 +113,27 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
 
     override fun onGraphChange() {
         expandAppBar()
+        cancelActiveJobs()
+    }
+
+    private fun cancelActiveJobs() {
+        val fragments =
+            bottomNavController.fragmentManager
+                .findFragmentById(bottomNavController.containerId)
+                ?.childFragmentManager
+                ?.fragments
+
+        if (fragments != null) {
+            for (fragment in fragments) {
+                when (fragment) {
+                    is BaseAccountFragment -> fragment.cancelActiveJobs()
+                    is BaseBlogFragment -> fragment.cancelActiveJobs()
+                    is BaseCreateBlogFragment -> fragment.cancelActiveJobs()
+                }
+            }
+        }
+
+        displayProgressBar(false)
     }
 
     override fun onReselectNavItem(navController: NavController, fragment: Fragment) =
