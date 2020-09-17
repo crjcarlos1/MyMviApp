@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.mymviapp.R
+import kotlinx.coroutines.InternalCoroutinesApi
 
+@InternalCoroutinesApi
 class UpdateBlogFragment : BaseBlogFragment(){
 
 

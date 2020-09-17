@@ -11,8 +11,10 @@ import com.example.mymviapp.ui.DataState
 import com.example.mymviapp.ui.main.blog.state.BlogStateEvent
 import com.example.mymviapp.ui.main.blog.state.BlogViewState
 import com.example.mymviapp.util.AbsentLiveData
+import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
 
+@InternalCoroutinesApi
 class BlogViewModel
 @Inject
 constructor(
@@ -25,7 +27,12 @@ constructor(
     override fun handleStateEvent(stateEvent: BlogStateEvent): LiveData<DataState<BlogViewState>> {
         when (stateEvent) {
             is BlogStateEvent.BlogSearchEvent -> {
-                return AbsentLiveData.create()
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    blogRepository.searchBlogPosts(
+                        authToken,
+                        viewState.value!!.blogFields.searchQuery
+                    )
+                } ?: AbsentLiveData.create()
             }
             is BlogStateEvent.None -> {
                 return AbsentLiveData.create()
@@ -39,9 +46,9 @@ constructor(
 
     fun setQuery(query: String) {
         val update = getCurrentViewStateOrNew()
-        if (query.equals(update.blogFields.searchQuery)) {
-            return
-        }
+        //if (query.equals(update.blogFields.searchQuery)) {
+        //    return
+        //}
         update.blogFields.searchQuery = query
         _viewState.value = update
     }

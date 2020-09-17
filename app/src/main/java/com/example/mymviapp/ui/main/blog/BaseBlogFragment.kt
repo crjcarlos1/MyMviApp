@@ -13,9 +13,11 @@ import com.example.mymviapp.R
 import com.example.mymviapp.ui.DataStateChangeListener
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
+import kotlinx.coroutines.InternalCoroutinesApi
 import java.lang.Exception
 import javax.inject.Inject
 
+@InternalCoroutinesApi
 abstract class BaseBlogFragment : DaggerFragment() {
 
     val TAG: String = "AppDebug"

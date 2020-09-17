@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.*
 import androidx.navigation.fragment.findNavController
 import com.example.mymviapp.R
+import kotlinx.coroutines.InternalCoroutinesApi
 
+@InternalCoroutinesApi
 class ViewBlogFragment : BaseBlogFragment() {
 
 
