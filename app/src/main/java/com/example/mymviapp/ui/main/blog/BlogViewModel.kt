@@ -34,6 +34,9 @@ constructor(
                     )
                 } ?: AbsentLiveData.create()
             }
+            is BlogStateEvent.CheckAuthorOfBlogPost -> {
+                return AbsentLiveData.create()
+            }
             is BlogStateEvent.None -> {
                 return AbsentLiveData.create()
             }
@@ -50,6 +53,18 @@ constructor(
         //    return
         //}
         update.blogFields.searchQuery = query
+        _viewState.value = update
+    }
+
+    fun setBlogPost(blogPost: BlogPost) {
+        val update = getCurrentViewStateOrNew()
+        update.viewBlogFields.blogPost = blogPost
+        _viewState.value = update
+    }
+
+    fun setIsAuthorOfBlogPost(isAuthorOfBlogPost: Boolean) {
+        val update = getCurrentViewStateOrNew()
+        update.viewBlogFields.isAuthorOfBlog = isAuthorOfBlogPost
         _viewState.value = update
     }
 

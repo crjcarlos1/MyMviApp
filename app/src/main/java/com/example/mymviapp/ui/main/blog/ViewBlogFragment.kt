@@ -3,8 +3,12 @@ package com.example.mymviapp.ui.main.blog
 
 import android.os.Bundle
 import android.view.*
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.mymviapp.R
+import com.example.mymviapp.models.BlogPost
+import com.example.mymviapp.util.DateUtils
+import kotlinx.android.synthetic.main.fragment_view_blog.*
 import kotlinx.coroutines.InternalCoroutinesApi
 
 @InternalCoroutinesApi
@@ -22,6 +26,7 @@ class ViewBlogFragment : BaseBlogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        subscriberObservers()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -45,6 +50,28 @@ class ViewBlogFragment : BaseBlogFragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun subscriberObservers() {
+        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+            stateChangeListener.onDataStateChange(dataState)
+
+        })
+        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
+            viewState.viewBlogFields.blogPost?.let { blogPost ->
+                setBlogProperties(blogPost)
+            }
+        })
+    }
+
+    private fun setBlogProperties(blogPost: BlogPost) {
+        requestManager
+            .load(blogPost.image)
+            .into(blog_image)
+        blog_title.setText(blogPost.title)
+        blog_author.setText(blogPost.username)
+        blog_update_date.setText(DateUtils.convertLongToStringDate(blogPost.date_updated))
+        blog_body.setText(blogPost.body)
     }
 
     fun navUpdateBlogFragment() {
