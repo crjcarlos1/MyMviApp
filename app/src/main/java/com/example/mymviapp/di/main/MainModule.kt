@@ -2,7 +2,10 @@ package com.example.mymviapp.di.main
 
 import com.example.mymviapp.api.main.OpenApiMainService
 import com.example.mymviapp.persistence.AccountPropertiesDao
+import com.example.mymviapp.persistence.AppDatabase
+import com.example.mymviapp.persistence.BlogPostDao
 import com.example.mymviapp.repository.main.AccountRepository
+import com.example.mymviapp.repository.main.BlogRepository
 import com.example.mymviapp.session.SessionManager
 import dagger.Module
 import dagger.Provides
@@ -29,6 +32,22 @@ class MainModule {
         sessionManager: SessionManager
     ): AccountRepository {
         return AccountRepository(openApiMainService, accountPropertiesDao, sessionManager)
+    }
+
+    @MainScope
+    @Provides
+    fun provideBlogPostDao(db: AppDatabase): BlogPostDao {
+        return db.getBlogPostDao()
+    }
+
+    @MainScope
+    @Provides
+    fun provideBlogRepository(
+        openApiMainService: OpenApiMainService,
+        blogPostDao: BlogPostDao,
+        sessionManager: SessionManager
+    ): BlogRepository {
+        return BlogRepository(openApiMainService, blogPostDao, sessionManager)
     }
 
 }
