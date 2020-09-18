@@ -44,3 +44,21 @@ fun BlogViewModel.setBlogListData(blogList: List<BlogPost>) {
     update.blogFields.blogList = blogList
     setViewState(update)
 }
+
+@InternalCoroutinesApi
+fun BlogViewModel.setBlogfilter(filter: String?) {
+    filter?.let {
+        val update = getCurrentViewStateOrNew()
+        update.blogFields.filter = filter
+        setViewState(update)
+    }
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.setBlogOrder(order: String?) {
+    order?.let {
+        val update = getCurrentViewStateOrNew()
+        update.blogFields.order = order
+        setViewState(update)
+    }
+}

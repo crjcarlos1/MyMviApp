@@ -2,7 +2,7 @@ package com.example.mymviapp.ui.main.blog.viewmodel
 
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
-import com.bumptech.glide.RequestManager
+import com.example.mymviapp.persistence.BlogQueryUtils
 import com.example.mymviapp.repository.main.BlogRepository
 import com.example.mymviapp.session.SessionManager
 import com.example.mymviapp.ui.BaseViewModel
@@ -11,6 +11,8 @@ import com.example.mymviapp.ui.Loading
 import com.example.mymviapp.ui.main.blog.state.BlogStateEvent
 import com.example.mymviapp.ui.main.blog.state.BlogViewState
 import com.example.mymviapp.util.AbsentLiveData
+import com.example.mymviapp.util.PreferenceKeys.Companion.BLOG_FILTER
+import com.example.mymviapp.util.PreferenceKeys.Companion.BLOG_ORDER
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
 
@@ -21,8 +23,20 @@ constructor(
     private val sessionManager: SessionManager,
     private val blogRepository: BlogRepository,
     private val sharedPreferences: SharedPreferences,
-    private val requestManager: RequestManager
+    private val editor: SharedPreferences.Editor
 ) : BaseViewModel<BlogStateEvent, BlogViewState>() {
+
+    init {
+        setBlogfilter(
+            sharedPreferences.getString(
+                BLOG_FILTER,
+                BlogQueryUtils.BLOG_FILTER_DATE_UPDATED
+            )
+        )
+        setBlogOrder(
+            sharedPreferences.getString(BLOG_ORDER, BlogQueryUtils.BLOG_ORDER_ASC)
+        )
+    }
 
     override fun handleStateEvent(stateEvent: BlogStateEvent): LiveData<DataState<BlogViewState>> {
         when (stateEvent) {
@@ -31,6 +45,7 @@ constructor(
                     blogRepository.searchBlogPosts(
                         authToken = authToken,
                         query = getSearchQuery(),
+                        filterAndOrder = getOrder() + getFilter(),
                         page = getPage()
                     )
                 } ?: AbsentLiveData.create()
@@ -51,6 +66,14 @@ constructor(
 
     override fun initViewState(): BlogViewState {
         return BlogViewState()
+    }
+
+    fun saveFilterOptions(filter: String, order: String) {
+        editor.putString(BLOG_FILTER, filter)
+        editor.apply()
+
+        editor.putString(BLOG_ORDER, order)
+        editor.apply()
     }
 
     fun cancelActiveJobs() {

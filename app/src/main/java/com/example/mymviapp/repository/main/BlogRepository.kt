@@ -8,6 +8,7 @@ import com.example.mymviapp.api.main.responses.BlogListSearchResponse
 import com.example.mymviapp.models.AuthToken
 import com.example.mymviapp.models.BlogPost
 import com.example.mymviapp.persistence.BlogPostDao
+import com.example.mymviapp.persistence.returnOrderedBlogQuery
 import com.example.mymviapp.repository.JobManager
 import com.example.mymviapp.repository.NetworkBoundResource
 import com.example.mymviapp.session.SessionManager
@@ -38,6 +39,7 @@ constructor(
     fun searchBlogPosts(
         authToken: AuthToken,
         query: String,
+        filterAndOrder: String,
         page: Int
     ): LiveData<DataState<BlogViewState>> {
         return object : NetworkBoundResource<BlogListSearchResponse, List<BlogPost>, BlogViewState>(
@@ -82,13 +84,15 @@ constructor(
                 return openApiMainService.searchListBlogPosts(
                     "Token ${authToken.token!!}",
                     query = query,
+                    ordering = filterAndOrder,
                     page = page
                 )
             }
 
             override fun loadFromCache(): LiveData<BlogViewState> {
-                return blogPostDao.getAllBlogPosts(
+                return blogPostDao.returnOrderedBlogQuery(
                     query = query,
+                    filterAndOrder = filterAndOrder,
                     page = page
                 )
                     .switchMap {

@@ -3,6 +3,20 @@ package com.example.mymviapp.ui.main.blog.viewmodel
 import kotlinx.coroutines.InternalCoroutinesApi
 
 @InternalCoroutinesApi
+fun BlogViewModel.getOrder(): String {
+    getCurrentViewStateOrNew().let {
+        return it.blogFields.order
+    }
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.getFilter(): String {
+    getCurrentViewStateOrNew().let {
+        return it.blogFields.filter
+    }
+}
+
+@InternalCoroutinesApi
 fun BlogViewModel.getSearchQuery(): String {
     getCurrentViewStateOrNew().let {
         return it.blogFields.searchQuery
