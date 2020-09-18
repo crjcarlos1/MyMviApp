@@ -1,5 +1,6 @@
 package com.example.mymviapp.ui.main.blog.viewmodel
 
+import com.example.mymviapp.models.BlogPost
 import kotlinx.coroutines.InternalCoroutinesApi
 
 @InternalCoroutinesApi
@@ -52,6 +53,20 @@ fun BlogViewModel.getSlug(): String {
         }
     }
     return ""
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.getBlogPost(): BlogPost {
+    getCurrentViewStateOrNew().let {
+        return it.viewBlogFields.blogPost?.let {
+            return it
+        } ?: getDummyBlogPost()
+    }
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.getDummyBlogPost(): BlogPost {
+    return BlogPost(-1, "", "", "","",1,"")
 }
 
 @InternalCoroutinesApi

@@ -32,6 +32,10 @@ class ViewBlogFragment : BaseBlogFragment() {
         subscriberObservers()
         checkIsAuthorOfBlogPost()
         stateChangeListener.expandAppBar()
+
+        delete_button.setOnClickListener {
+            deleteBlogFragment()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -73,6 +77,10 @@ class ViewBlogFragment : BaseBlogFragment() {
                 }
             }
         })
+    }
+
+    private fun deleteBlogFragment() {
+        viewModel.setStateEvent(BlogStateEvent.DeleteBlogPostEvent())
     }
 
     private fun adaptViewToAuthorMode() {

@@ -40,6 +40,7 @@ constructor(
 
     override fun handleStateEvent(stateEvent: BlogStateEvent): LiveData<DataState<BlogViewState>> {
         when (stateEvent) {
+
             is BlogStateEvent.BlogSearchEvent -> {
                 return sessionManager.cachedToken.value?.let { authToken ->
                     blogRepository.searchBlogPosts(
@@ -50,6 +51,7 @@ constructor(
                     )
                 } ?: AbsentLiveData.create()
             }
+
             is BlogStateEvent.CheckAuthorOfBlogPost -> {
                 return sessionManager.cachedToken.value?.let { authToken ->
                     blogRepository.isAuthorOfBlogPost(
@@ -58,6 +60,16 @@ constructor(
                     )
                 } ?: AbsentLiveData.create()
             }
+
+            is BlogStateEvent.DeleteBlogPostEvent -> {
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    blogRepository.deleteBlogPost(
+                        authToken = authToken,
+                        blogPost = getBlogPost()
+                    )
+                } ?: AbsentLiveData.create()
+            }
+
             is BlogStateEvent.None -> {
                 return object : LiveData<DataState<BlogViewState>>() {
                     override fun onActive() {
@@ -66,6 +78,7 @@ constructor(
                     }
                 }
             }
+
         }
     }
 
