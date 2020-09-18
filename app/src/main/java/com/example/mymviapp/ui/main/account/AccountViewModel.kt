@@ -6,7 +6,7 @@ import com.example.mymviapp.repository.main.AccountRepository
 import com.example.mymviapp.session.SessionManager
 import com.example.mymviapp.ui.BaseViewModel
 import com.example.mymviapp.ui.DataState
-import com.example.mymviapp.ui.auth.state.AuthStateEvent
+import com.example.mymviapp.ui.Loading
 import com.example.mymviapp.ui.main.account.state.AccountStateEvent
 import com.example.mymviapp.ui.main.account.state.AccountViewState
 import com.example.mymviapp.util.AbsentLiveData
@@ -50,7 +50,12 @@ constructor(
                 } ?: AbsentLiveData.create()
             }
             is AccountStateEvent.None -> {
-                return AbsentLiveData.create()
+                return object : LiveData<DataState<AccountViewState>>() {
+                    override fun onActive() {
+                        super.onActive()
+                        value = DataState(null, Loading(false), null)
+                    }
+                }
             }
         }
     }

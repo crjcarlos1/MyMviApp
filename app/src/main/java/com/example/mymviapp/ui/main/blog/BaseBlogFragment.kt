@@ -12,6 +12,7 @@ import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.example.mymviapp.R
 import com.example.mymviapp.ui.DataStateChangeListener
+import com.example.mymviapp.ui.main.blog.viewmodel.BlogViewModel
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.InternalCoroutinesApi

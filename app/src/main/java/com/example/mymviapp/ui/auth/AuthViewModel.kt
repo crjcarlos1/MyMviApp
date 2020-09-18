@@ -54,7 +54,7 @@ constructor(val authRepository: AuthRepository) : BaseViewModel<AuthStateEvent, 
             return
         }
         update.loginFields = loginFields
-        _viewState.value = update
+        setViewState(update)
     }
 
     fun setRegistrationFields(registrationFields: RegistrationFields) {
@@ -63,7 +63,7 @@ constructor(val authRepository: AuthRepository) : BaseViewModel<AuthStateEvent, 
             return
         }
         update.registrationFileds = registrationFields
-        _viewState.value = update
+        setViewState(update)
     }
 
     fun setAuthToken(authToken: AuthToken) {
@@ -72,7 +72,7 @@ constructor(val authRepository: AuthRepository) : BaseViewModel<AuthStateEvent, 
             return
         }
         update.authToken = authToken
-        _viewState.value = update
+        setViewState(update)
     }
 
     fun cancelActiveJobs() {
