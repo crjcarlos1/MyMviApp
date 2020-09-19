@@ -4,6 +4,19 @@ import com.example.mymviapp.models.BlogPost
 import kotlinx.coroutines.InternalCoroutinesApi
 
 @InternalCoroutinesApi
+fun BlogViewModel.removeDeletedBlogPost() {
+    val update = getCurrentViewStateOrNew()
+    val list = update.blogFields.blogList.toMutableList()
+    for (i in 0..(list.size - 1)) {
+        if (list[i] == getBlogPost()) {
+            list.remove(getBlogPost())
+            break
+        }
+    }
+    setBlogListData(list)
+}
+
+@InternalCoroutinesApi
 fun BlogViewModel.setQuery(query: String) {
     val update = getCurrentViewStateOrNew()
     update.blogFields.searchQuery = query

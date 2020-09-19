@@ -12,6 +12,7 @@ import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.example.mymviapp.R
 import com.example.mymviapp.ui.DataStateChangeListener
+import com.example.mymviapp.ui.UICommunicationListener
 import com.example.mymviapp.ui.main.blog.viewmodel.BlogViewModel
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
@@ -34,6 +35,8 @@ abstract class BaseBlogFragment : DaggerFragment() {
 
     lateinit var stateChangeListener: DataStateChangeListener
 
+    lateinit var uiCommunicationListener: UICommunicationListener
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupActionBarWithNavController(R.id.blogFragment, activity as AppCompatActivity)
@@ -51,6 +54,11 @@ abstract class BaseBlogFragment : DaggerFragment() {
             stateChangeListener = context as DataStateChangeListener
         } catch (e: ClassCastException) {
             Log.e(TAG, "$context must implement DataStateChangeListener")
+        }
+        try {
+            uiCommunicationListener = context as UICommunicationListener
+        } catch (e: ClassCastException) {
+            Log.e(TAG, "$context must implement UICommunicationListener")
         }
     }
 

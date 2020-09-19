@@ -7,10 +7,15 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.mymviapp.R
 import com.example.mymviapp.models.BlogPost
+import com.example.mymviapp.ui.AreYouSureCallback
+import com.example.mymviapp.ui.UIMessage
+import com.example.mymviapp.ui.UIMessageType
 import com.example.mymviapp.ui.main.blog.state.BlogStateEvent
 import com.example.mymviapp.ui.main.blog.viewmodel.isAuthorOfBlogPost
+import com.example.mymviapp.ui.main.blog.viewmodel.removeDeletedBlogPost
 import com.example.mymviapp.ui.main.blog.viewmodel.setIsAuthorOfBlogPost
 import com.example.mymviapp.util.DateUtils
+import com.example.mymviapp.util.SuccessHandling.Companion.SUCCESS_BLOG_DELETED
 import kotlinx.android.synthetic.main.fragment_view_blog.*
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -34,7 +39,7 @@ class ViewBlogFragment : BaseBlogFragment() {
         stateChangeListener.expandAppBar()
 
         delete_button.setOnClickListener {
-            deleteBlogFragment()
+            confirmDeleteRequest()
         }
     }
 
@@ -66,6 +71,12 @@ class ViewBlogFragment : BaseBlogFragment() {
                         viewState.viewBlogFields.isAuthorOfBlog
                     )
                 }
+                data.response?.peekContent()?.let { response ->
+                    if (response.message.equals(SUCCESS_BLOG_DELETED)) {
+                        viewModel.removeDeletedBlogPost()
+                        findNavController().popBackStack()
+                    }
+                }
             }
 
         })
@@ -79,7 +90,7 @@ class ViewBlogFragment : BaseBlogFragment() {
         })
     }
 
-    private fun deleteBlogFragment() {
+    private fun deleteBlogPost() {
         viewModel.setStateEvent(BlogStateEvent.DeleteBlogPostEvent())
     }
 
@@ -101,6 +112,24 @@ class ViewBlogFragment : BaseBlogFragment() {
         blog_author.setText(blogPost.username)
         blog_update_date.setText(DateUtils.convertLongToStringDate(blogPost.date_updated))
         blog_body.setText(blogPost.body)
+    }
+
+    private fun confirmDeleteRequest() {
+        val callback: AreYouSureCallback = object : AreYouSureCallback {
+            override fun proceed() {
+                deleteBlogPost()
+            }
+
+            override fun cancel() {
+                //ignore
+            }
+        }
+        uiCommunicationListener.onUIMessageReceived(
+            UIMessage(
+                getString(R.string.are_you_sure_delete),
+                UIMessageType.AreYouSureDialog(callback)
+            )
+        )
     }
 
     fun navUpdateBlogFragment() {
