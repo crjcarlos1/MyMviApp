@@ -14,6 +14,8 @@ import com.example.mymviapp.util.AbsentLiveData
 import com.example.mymviapp.util.PreferenceKeys.Companion.BLOG_FILTER
 import com.example.mymviapp.util.PreferenceKeys.Companion.BLOG_ORDER
 import kotlinx.coroutines.InternalCoroutinesApi
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 @InternalCoroutinesApi
@@ -66,6 +68,20 @@ constructor(
                     blogRepository.deleteBlogPost(
                         authToken = authToken,
                         blogPost = getBlogPost()
+                    )
+                } ?: AbsentLiveData.create()
+            }
+
+            is BlogStateEvent.UpdateBlogPostEvent -> {
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    val title = RequestBody.create(MediaType.parse("text/plain"), stateEvent.title)
+                    val body = RequestBody.create(MediaType.parse("text/plain"), stateEvent.body)
+                    blogRepository.updateBlogPost(
+                        authToken = authToken,
+                        slug = getSlug(),
+                        title = title,
+                        body = body,
+                        image = stateEvent.image
                     )
                 } ?: AbsentLiveData.create()
             }

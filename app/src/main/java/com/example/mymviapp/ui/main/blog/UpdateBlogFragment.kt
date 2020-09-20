@@ -1,14 +1,17 @@
 package com.example.mymviapp.ui.main.blog
 
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.lifecycle.Observer
 import com.example.mymviapp.R
+import com.example.mymviapp.ui.main.blog.state.BlogStateEvent
+import kotlinx.android.synthetic.main.fragment_update_blog.*
 import kotlinx.coroutines.InternalCoroutinesApi
+import okhttp3.MultipartBody
 
 @InternalCoroutinesApi
-class UpdateBlogFragment : BaseBlogFragment(){
+class UpdateBlogFragment : BaseBlogFragment() {
 
 
     override fun onCreateView(
@@ -21,5 +24,70 @@ class UpdateBlogFragment : BaseBlogFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+        subscribeObservers()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.update_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.save -> {
+                saveChanges()
+                true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun subscribeObservers() {
+        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+            stateChangeListener.onDataStateChange(dataState)
+            dataState.data?.let { data ->
+                data.data?.getContentIfNotHandled()?.let { viewState ->
+                    //if this is not null, the blogpost was updated
+                    viewState.viewBlogFields.blogPost?.let { blogPost ->
+                        //TODO("onBlogPostUpdateSuccess")
+                    }
+                }
+            }
+        })
+        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewStae ->
+            viewStae.updateBlogFields.let { updateBlogFields ->
+                setBlogProperties(
+                    updateBlogFields.updateBlogTitle,
+                    updateBlogFields.updateBlogBody,
+                    updateBlogFields.updateImageUri
+                )
+            }
+        })
+    }
+
+    private fun setBlogProperties(
+        title: String?,
+        body: String?,
+        image: Uri?
+    ) {
+        requestManager
+            .load(image)
+            .into(blog_image)
+        blog_title.setText(title)
+        blog_body.setText(body)
+    }
+
+    private fun saveChanges() {
+        var multipartBody: MultipartBody.Part? = null
+        viewModel.setStateEvent(
+            BlogStateEvent.UpdateBlogPostEvent(
+                blog_title.text.toString(),
+                blog_body.text.toString(),
+                multipartBody
+            )
+        )
+        stateChangeListener.hideSoftKeyboard()
+    }
+
 }

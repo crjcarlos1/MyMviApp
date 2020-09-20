@@ -8,6 +8,13 @@ import com.example.mymviapp.util.Constants.Companion.PAGINATION_PAGE_SIZE
 @Dao
 interface BlogPostDao {
 
+    @Query(
+        """
+        UPDATE blog_post SET title= :title, body = :body, image = :image WHERE  pk = :pk
+        """
+    )
+    fun updateBlogPost(pk: Int, title: String, body: String, image: String)
+
     @Delete
     suspend fun deleteBlogPost(blogPost: BlogPost)
 

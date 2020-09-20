@@ -1,5 +1,6 @@
 package com.example.mymviapp.ui.main.blog.viewmodel
 
+import android.net.Uri
 import com.example.mymviapp.models.BlogPost
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -74,4 +75,19 @@ fun BlogViewModel.setBlogOrder(order: String?) {
         update.blogFields.order = order
         setViewState(update)
     }
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.setUpdatedBlogFields(
+    title: String?,
+    body: String?,
+    uri: Uri?
+) {
+    val update = getCurrentViewStateOrNew()
+    val updateBlogFields = update.updateBlogFields
+    title?.let { updateBlogFields.updateBlogTitle = it }
+    body?.let { updateBlogFields.updateBlogBody = it }
+    uri?.let { updateBlogFields.updateImageUri = it }
+    update.updateBlogFields = updateBlogFields
+    setViewState(update)
 }
