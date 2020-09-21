@@ -122,6 +122,17 @@ class BlogListAdapter(
         }
     }
 
+    //Prepare the images that will be displayed in the RecyclerView.
+    //This also ensures if the network connection is lost, they will be in the cache
+    fun preloadGlideImages(
+        requestManager: RequestManager,
+        list: List<BlogPost>
+    ) {
+        for (blogPost in list) {
+            requestManager.load(blogPost.image).preload()
+        }
+    }
+
     fun submitList(list: List<BlogPost>?, isQueryExhausted: Boolean) {
         val newList = list?.toMutableList()
         if (isQueryExhausted) {
