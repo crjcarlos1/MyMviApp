@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.bumptech.glide.RequestManager
 import com.example.mymviapp.R
 import com.example.mymviapp.ui.DataStateChangeListener
 import com.example.mymviapp.ui.UICommunicationListener
@@ -22,6 +23,9 @@ abstract class BaseCreateBlogFragment : DaggerFragment() {
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
+
+    @Inject
+    lateinit var requestManager: RequestManager
 
     lateinit var stateChangeListener: DataStateChangeListener
 
@@ -46,8 +50,8 @@ abstract class BaseCreateBlogFragment : DaggerFragment() {
             Log.e(TAG, "$context must implement DataStateChangeListener")
         }
         try {
-            uiCommunicationListener= context as UICommunicationListener
-        }catch (e: java.lang.ClassCastException){
+            uiCommunicationListener = context as UICommunicationListener
+        } catch (e: java.lang.ClassCastException) {
             Log.e(TAG, "$context must implement UICommunicationListener")
         }
     }

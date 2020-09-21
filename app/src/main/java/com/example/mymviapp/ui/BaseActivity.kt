@@ -1,9 +1,14 @@
 package com.example.mymviapp.ui
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.mymviapp.session.SessionManager
+import com.example.mymviapp.util.Constants.Companion.PERMISSIONS_REQUEST_READ__STORAGE
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -105,6 +110,25 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
             is UIMessageType.None -> {
                 Log.d(TAG, "onUIMessageReceived: ${uiMessage.message}")
             }
+        }
+    }
+
+    override fun isStoragePermissionGranted(): Boolean {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ),
+                PERMISSIONS_REQUEST_READ__STORAGE
+            )
+            return false
+        } else {
+            return true
         }
     }
 
