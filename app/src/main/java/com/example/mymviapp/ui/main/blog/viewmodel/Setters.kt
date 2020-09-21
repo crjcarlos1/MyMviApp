@@ -91,3 +91,28 @@ fun BlogViewModel.setUpdatedBlogFields(
     update.updateBlogFields = updateBlogFields
     setViewState(update)
 }
+
+@InternalCoroutinesApi
+fun BlogViewModel.updateListItem(newBlogPost: BlogPost) {
+    val update = getCurrentViewStateOrNew()
+    val list = update.blogFields.blogList.toMutableList()
+    for (i in 0..(list.size - 1)) {
+        if (list[i].pk == newBlogPost.pk) {
+            list[i] = newBlogPost
+            break
+        }
+    }
+    update.blogFields.blogList = list
+    setViewState(update)
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.onBlogPostUpdateSuccess(blogPost: BlogPost) {
+    setUpdatedBlogFields(
+        uri = null,
+        title = blogPost.title,
+        body = blogPost.body
+    )// update UpdateBlogFragment (not really ecessary since navigating back)
+    setBlogPost(blogPost)// updateViewBlogFragment
+    updateListItem(blogPost)//updateBlogFragment
+}

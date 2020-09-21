@@ -1,5 +1,6 @@
 package com.example.mymviapp.ui.main.blog.viewmodel
 
+import android.net.Uri
 import com.example.mymviapp.models.BlogPost
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -66,7 +67,7 @@ fun BlogViewModel.getBlogPost(): BlogPost {
 
 @InternalCoroutinesApi
 fun BlogViewModel.getDummyBlogPost(): BlogPost {
-    return BlogPost(-1, "", "", "","",1,"")
+    return BlogPost(-1, "", "", "", "", 1, "")
 }
 
 @InternalCoroutinesApi
@@ -74,4 +75,14 @@ fun BlogViewModel.isAuthorOfBlogPost(): Boolean {
     getCurrentViewStateOrNew().let {
         return it.viewBlogFields.isAuthorOfBlog
     }
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.getUpdatedBlogUri(): Uri? {
+    getCurrentViewStateOrNew().let {
+        it.updateBlogFields.updateImageUri?.let {
+            return it
+        }
+    }
+    return null
 }
