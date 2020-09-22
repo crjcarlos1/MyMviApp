@@ -11,8 +11,12 @@ import com.example.mymviapp.ui.Loading
 import com.example.mymviapp.ui.main.create_blog.state.CreateBlogStateEvent
 import com.example.mymviapp.ui.main.create_blog.state.CreateBlogViewState
 import com.example.mymviapp.util.AbsentLiveData
+import kotlinx.coroutines.InternalCoroutinesApi
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import javax.inject.Inject
 
+@InternalCoroutinesApi
 class CreateBlogViewModel
 @Inject
 constructor(
@@ -24,7 +28,13 @@ constructor(
         when (stateEvent) {
 
             is CreateBlogStateEvent.CreateNewBlogEvent -> {
-                return AbsentLiveData.create()
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    val title = RequestBody.create(MediaType.parse("text/plain"), stateEvent.title)
+                    val body = RequestBody.create(MediaType.parse("text/plain"), stateEvent.body)
+                    createBlogRepository.createNewBlogPost(
+                        authToken, title, body, stateEvent.image
+                    )
+                } ?: AbsentLiveData.create()
             }
 
             is CreateBlogStateEvent.None -> {
@@ -56,7 +66,15 @@ constructor(
         setViewState(update)
     }
 
-    fun cancelActiveJobs(){
+    fun getNewImageUri(): Uri? {
+        getCurrentViewStateOrNew().let {
+            it.blogFields.let {
+                return it.newImageUri
+            }
+        }
+    }
+
+    fun cancelActiveJobs() {
         createBlogRepository.cancelActiveJobs()
         handlePendingData()
     }
