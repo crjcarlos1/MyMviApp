@@ -2,14 +2,15 @@ package com.example.mymviapp.ui.auth
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.mymviapp.di.Injectable
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
-import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
 
 @InternalCoroutinesApi
-abstract class BaseAuthFragment : DaggerFragment() {
+abstract class BaseAuthFragment : Fragment(), Injectable {
 
     val TAG: String = "AppDebug"
 

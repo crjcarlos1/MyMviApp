@@ -5,23 +5,23 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.example.mymviapp.R
+import com.example.mymviapp.di.Injectable
 import com.example.mymviapp.ui.DataStateChangeListener
 import com.example.mymviapp.ui.UICommunicationListener
 import com.example.mymviapp.ui.main.blog.viewmodel.BlogViewModel
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
-import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.InternalCoroutinesApi
-import java.lang.Exception
 import javax.inject.Inject
 
 @InternalCoroutinesApi
-abstract class BaseBlogFragment : DaggerFragment() {
+abstract class BaseBlogFragment : Fragment(), Injectable {
 
     val TAG: String = "AppDebug"
 
@@ -41,9 +41,9 @@ abstract class BaseBlogFragment : DaggerFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupActionBarWithNavController(R.id.blogFragment, activity as AppCompatActivity)
 
-        viewModel=activity?.run {
-            ViewModelProvider(this,providerFactory).get(BlogViewModel::class.java)
-        }?: throw  Exception("Invalid activity")
+        viewModel = activity?.run {
+            ViewModelProvider(this, providerFactory).get(BlogViewModel::class.java)
+        } ?: throw  Exception("Invalid activity")
 
         cancelActiveJobs()
     }

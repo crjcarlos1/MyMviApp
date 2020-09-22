@@ -5,21 +5,22 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.example.mymviapp.R
+import com.example.mymviapp.di.Injectable
 import com.example.mymviapp.ui.DataStateChangeListener
 import com.example.mymviapp.ui.UICommunicationListener
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
-import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
 
 @InternalCoroutinesApi
-abstract class BaseCreateBlogFragment : DaggerFragment() {
+abstract class BaseCreateBlogFragment : Fragment(), Injectable {
 
     val TAG: String = "AppDebug"
 
