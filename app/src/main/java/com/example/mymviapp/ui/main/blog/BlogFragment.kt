@@ -99,7 +99,10 @@ class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction,
             Log.d(TAG, "BlogFragment, ViewState: $viewState")
             if (viewState != null) {
                 recyclerAdapter.apply {
-                    preloadGlideImages(requestManager, viewState.blogFields.blogList)
+                    preloadGlideImages(
+                        dependencyProvider.getGlideRequestManager(),
+                        viewState.blogFields.blogList
+                    )
                     submitList(
                         list = viewState.blogFields.blogList,
                         isQueryExhausted = viewState.blogFields.isQueryExhausted
@@ -111,15 +114,6 @@ class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction,
 
     private fun handlePagination(dataState: DataState<BlogViewState>) {
         //handle incoming  data from  DataState
-        /*
-        dataState.data?.let {
-            it.data?.let{
-                it.getContentIfNotHandled()?.let{
-                    viewModel.handleIncomingBlogListData(it)
-                }
-            }
-        }
-         */
         dataState.data?.let {
             it.data?.let {
                 it.getContentIfNotHandled()?.let {
@@ -153,7 +147,7 @@ class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction,
             removeItemDecoration(topSpacingItemDecoration)
             addItemDecoration(topSpacingItemDecoration)
             recyclerAdapter = BlogListAdapter(
-                requestManager = requestManager,
+                requestManager = dependencyProvider.getGlideRequestManager(),
                 interaction = this@BlogFragment
             )
 

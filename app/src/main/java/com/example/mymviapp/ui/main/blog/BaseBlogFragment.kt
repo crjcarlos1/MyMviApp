@@ -10,26 +10,22 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import com.bumptech.glide.RequestManager
 import com.example.mymviapp.R
 import com.example.mymviapp.di.Injectable
 import com.example.mymviapp.ui.DataStateChangeListener
 import com.example.mymviapp.ui.UICommunicationListener
+import com.example.mymviapp.ui.main.MainDependencyProvider
+import com.example.mymviapp.ui.main.blog.state.BLOG_VIEW_STATE_BUNDLE_KEY
+import com.example.mymviapp.ui.main.blog.state.BlogViewState
 import com.example.mymviapp.ui.main.blog.viewmodel.BlogViewModel
-import com.example.mymviapp.viewmodels.ViewModelProviderFactory
 import kotlinx.coroutines.InternalCoroutinesApi
-import javax.inject.Inject
 
 @InternalCoroutinesApi
 abstract class BaseBlogFragment : Fragment(), Injectable {
 
     val TAG: String = "AppDebug"
 
-    @Inject
-    lateinit var providerFactory: ViewModelProviderFactory
-
-    @Inject
-    lateinit var requestManager: RequestManager
+    lateinit var dependencyProvider: MainDependencyProvider
 
     lateinit var viewModel: BlogViewModel
 
@@ -37,15 +33,34 @@ abstract class BaseBlogFragment : Fragment(), Injectable {
 
     lateinit var uiCommunicationListener: UICommunicationListener
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = activity?.run {
+            ViewModelProvider(
+                this,
+                dependencyProvider.getVMProviderFactory()
+            ).get(BlogViewModel::class.java)
+        } ?: throw  Exception("Invalid activity")
+        cancelActiveJobs()
+
+        //restore state  after process death
+        savedInstanceState?.let { inState ->
+            (inState[BLOG_VIEW_STATE_BUNDLE_KEY] as BlogViewState?)?.let { viewState ->
+                viewModel.setViewState(viewState)
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupActionBarWithNavController(R.id.blogFragment, activity as AppCompatActivity)
+    }
 
-        viewModel = activity?.run {
-            ViewModelProvider(this, providerFactory).get(BlogViewModel::class.java)
-        } ?: throw  Exception("Invalid activity")
-
-        cancelActiveJobs()
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (isViewModelInitialized()) {
+            outState.putParcelable(BLOG_VIEW_STATE_BUNDLE_KEY, viewModel.viewState.value)
+        }
+        super.onSaveInstanceState(outState)
     }
 
     override fun onAttach(context: Context) {
@@ -60,7 +75,14 @@ abstract class BaseBlogFragment : Fragment(), Injectable {
         } catch (e: ClassCastException) {
             Log.e(TAG, "$context must implement UICommunicationListener")
         }
+        try {
+            dependencyProvider = context as MainDependencyProvider
+        } catch (e: ClassCastException) {
+            Log.e(TAG, "$context must implement MainDependencyProvider")
+        }
     }
+
+    fun isViewModelInitialized() = ::viewModel.isInitialized
 
     /*
      @fragmentId is id of fragment from graph to be EXCLUDED from action back bar nav

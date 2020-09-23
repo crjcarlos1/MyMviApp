@@ -13,6 +13,12 @@ import androidx.navigation.ui.NavigationUI
 import com.example.mymviapp.R
 import com.example.mymviapp.di.Injectable
 import com.example.mymviapp.ui.DataStateChangeListener
+import com.example.mymviapp.ui.main.MainDependencyProvider
+import com.example.mymviapp.ui.main.account.state.ACCOUNT_VIEW_STATE_BUNDLE_KEY
+import com.example.mymviapp.ui.main.account.state.AccountViewState
+import com.example.mymviapp.ui.main.blog.state.BLOG_VIEW_STATE_BUNDLE_KEY
+import com.example.mymviapp.ui.main.blog.state.BlogViewState
+import com.example.mymviapp.ui.main.blog.viewmodel.BlogViewModel
 import com.example.mymviapp.viewmodels.ViewModelProviderFactory
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
@@ -22,20 +28,39 @@ abstract class BaseAccountFragment : Fragment(), Injectable {
 
     val TAG: String = "AppDebug"
 
+    lateinit var dependencyProvider: MainDependencyProvider
+
     lateinit var stateChangeListener: DataStateChangeListener
 
-    @Inject
-    lateinit var providerFactory: ViewModelProviderFactory
-
     lateinit var viewModel: AccountViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = activity?.run {
+            ViewModelProvider(this, dependencyProvider.getVMProviderFactory()).get(AccountViewModel::class.java)
+        } ?: throw Exception("invalid activity")
+        cancelActiveJobs()
+
+        //restore state  after process death
+        savedInstanceState?.let { inState ->
+            (inState[ACCOUNT_VIEW_STATE_BUNDLE_KEY] as AccountViewState?)?.let { viewState ->
+                viewModel.setViewState(viewState)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (isViewModelInitialized()) {
+            outState.putParcelable(ACCOUNT_VIEW_STATE_BUNDLE_KEY, viewModel.viewState.value)
+        }
+        super.onSaveInstanceState(outState)
+    }
+
+    fun isViewModelInitialized() = ::viewModel.isInitialized
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupActionBarWithNavController(R.id.accountFragment, activity as AppCompatActivity)
-        viewModel = activity?.run {
-            ViewModelProvider(this, providerFactory).get(AccountViewModel::class.java)
-        } ?: throw Exception("invalid activity")
-        cancelActiveJobs()
     }
 
     override fun onAttach(context: Context) {
@@ -44,6 +69,11 @@ abstract class BaseAccountFragment : Fragment(), Injectable {
             stateChangeListener = context as DataStateChangeListener
         } catch (e: ClassCastException) {
             Log.e(TAG, "$context must implement DataStateChangeListener")
+        }
+        try {
+            dependencyProvider = context as MainDependencyProvider
+        } catch (e: ClassCastException) {
+            Log.e(TAG, "$context must implement MainDependencyProvider")
         }
     }
 

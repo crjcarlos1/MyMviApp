@@ -46,7 +46,9 @@ class UpdateAccountFragment : BaseAccountFragment() {
     private fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             Log.d(TAG, "UpdateAccountFragment: $dataState")
-            stateChangeListener.onDataStateChange(dataState)
+            if (dataState!=null){
+                stateChangeListener.onDataStateChange(dataState)
+            }
         })
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             if (viewState != null) {
