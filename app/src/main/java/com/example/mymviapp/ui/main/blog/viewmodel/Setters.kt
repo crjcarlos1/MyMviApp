@@ -1,6 +1,7 @@
 package com.example.mymviapp.ui.main.blog.viewmodel
 
 import android.net.Uri
+import android.os.Parcelable
 import com.example.mymviapp.models.BlogPost
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -66,6 +67,20 @@ fun BlogViewModel.setBlogfilter(filter: String?) {
         update.blogFields.filter = filter
         setViewState(update)
     }
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.setLayoutManagerState(layoutManagerState: Parcelable) {
+    val update = getCurrentViewStateOrNew()
+    update.blogFields.layoutManagerState = layoutManagerState
+    setViewState(update)
+}
+
+@InternalCoroutinesApi
+fun BlogViewModel.clearLayoutManagerState() {
+    val update = getCurrentViewStateOrNew()
+    update.blogFields.layoutManagerState = null
+    setViewState(update)
 }
 
 @InternalCoroutinesApi

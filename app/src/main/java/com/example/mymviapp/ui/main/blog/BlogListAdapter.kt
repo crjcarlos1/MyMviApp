@@ -135,10 +135,12 @@ class BlogListAdapter(
 
     fun submitList(list: List<BlogPost>?, isQueryExhausted: Boolean) {
         val newList = list?.toMutableList()
-        if (isQueryExhausted) {
+        if (isQueryExhausted)
             newList?.add(NO_MORE_RESULTS_BLOG_MARKER)
+        val commitCallback = Runnable {
+            interaction?.restoreListPosition()
         }
-        differ.submitList(list)
+        differ.submitList(list, commitCallback)
     }
 
     class BlogViewHolder
@@ -167,5 +169,6 @@ class BlogListAdapter(
 
     interface Interaction {
         fun onItemSelected(position: Int, item: BlogPost)
+        fun restoreListPosition()
     }
 }

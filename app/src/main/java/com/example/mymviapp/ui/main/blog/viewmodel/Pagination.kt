@@ -13,6 +13,13 @@ fun BlogViewModel.resetPage() {
 }
 
 @InternalCoroutinesApi
+fun BlogViewModel.refreshFromCache(){
+    setQueryInProgress(true)
+    setQueryExhausted(false)
+    setStateEvent(BlogStateEvent.RestoreBlogListFromCache())
+}
+
+@InternalCoroutinesApi
 fun BlogViewModel.loadFirstPage() {
     setQueryInProgress(true)
     setQueryExhausted(false)

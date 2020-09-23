@@ -55,9 +55,16 @@ class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction,
         swipe_refresh.setOnRefreshListener(this)
         initRecyclerView()
         subscribeObservers()
-        if (savedInstanceState == null) {
-            viewModel.loadFirstPage()
-        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshFromCache()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveLayoutManagerState()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -87,6 +94,12 @@ class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction,
         findNavController().navigate(R.id.action_blogFragment_to_viewBlogFragment)
     }
 
+    override fun restoreListPosition() {
+        viewModel.viewState.value?.blogFields?.layoutManagerState?.let { lmState ->
+            blog_post_recyclerview?.layoutManager?.onRestoreInstanceState(lmState)
+        }
+    }
+
     private fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             if (dataState != null) {
@@ -103,6 +116,7 @@ class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction,
                         dependencyProvider.getGlideRequestManager(),
                         viewState.blogFields.blogList
                     )
+                    Log.d(TAG, "# list items: ${viewState.blogFields.blogList.size}")
                     submitList(
                         list = viewState.blogFields.blogList,
                         isQueryExhausted = viewState.blogFields.isQueryExhausted
@@ -110,6 +124,12 @@ class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction,
                 }
             }
         })
+    }
+
+    private fun saveLayoutManagerState() {
+        blog_post_recyclerview.layoutManager?.onSaveInstanceState()?.let { lmState ->
+            viewModel.setLayoutManagerState(lmState)
+        }
     }
 
     private fun handlePagination(dataState: DataState<BlogViewState>) {
